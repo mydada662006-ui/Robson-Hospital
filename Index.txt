@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robson and AI Dynamic Partogram (RAIDS) - Dr Yasser Elshehawy</title>
+    <style>
+        :root {
+            --bg-primary: #0a0f1d;
+            --bg-card: rgba(16, 24, 48, 0.85);
+            --accent-cyan: #00f2fe;
+            --accent-blue: #4facfe;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border-color: rgba(0, 242, 254, 0.2);
+            --alert-red: #ff4b5c;
+            --warning-yellow: #f1c40f;
+            --success-green: #2ecc71;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .header-titles h1 {
+            color: var(--accent-cyan);
+            font-size: 1.6rem;
+        }
+
+        .header-titles p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .lang-btn {
+            background: rgba(0, 242, 254, 0.1);
+            color: var(--accent-cyan);
+            border: 1px solid var(--accent-cyan);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .lang-btn:hover {
+            background: var(--accent-cyan);
+            color: #000;
+        }
+
+        .patient-info-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 20px;
+            flex: 1;
+        }
+
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .canvas-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        canvas {
+            background: rgba(5, 8, 16, 0.9);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            max-width: 100%;
+            height: auto;
+        }
+
+        .controls-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .section-title {
+            color: var(--accent-blue);
+            font-size: 1.1rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+            margin-bottom: 5px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .input-group label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .input-group input, .input-group select, .input-group textarea {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: #fff;
+            outline: none;
+        }
+
+        .input-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        button.action-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+            color: #000;
+        }
+
+        .btn-reset {
+            background: rgba(255, 75, 92, 0.2);
+            color: var(--alert-red);
+            border: 1px solid var(--alert-red);
+        }
+
+        .illustrations-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .illustrations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .illustration-box {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .illustration-box svg {
+            width: 100%;
+            max-width: 200px;
+            height: 140px;
+            margin-top: 10px;
+        }
+
+        footer {
+            margin-top: 20px;
+            text-align: center;
+            padding: 15px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .legend {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+            font-size: 0.8rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-titles">
+            <h1 id="appTitle">Robson and AI Dynamic Partogram (RAIDS)</h1>
+            <p id="appSub">نظام متابعة الولادة التفاعلي والسجل الطبي</p>
+        </div>
+        <button class="lang-btn" onclick="toggleLanguage()" id="langBtn">English</button>
+    </header>
+
+    <!-- Patient and Medical Team Data -->
+    <div class="patient-info-card">
+        <div class="input-group">
+            <label id="lblHospital">اسم المستشفى:</label>
+            <input type="text" id="hospitalName" placeholder="أدخل اسم المستشفى">
+        </div>
+        <div class="input-group">
+            <label id="lblName">اسم المريضة:</label>
+            <input type="text" id="patientName" placeholder="اسم المريضة الثلاثي">
+        </div>
+        <div class="input-group">
+            <label id="lblAge">العمر:</label>
+            <input type="number" id="patientAge" placeholder="العمر بالسنين">
+        </div>
+        <div class="input-group">
+            <label id="lblMRN">رقم الملف الطبي (MRN):</label>
+            <input type="text" id="patientMRN" placeholder="رقم الملف">
+        </div>
+        <div class="input-group">
+            <label id="lblDate">التاريخ:</label>
+            <input type="date" id="examDate">
+        </div>
+        <div class="input-group">
+            <label id="lblDoctor">اسم الطبيب القائم بالولادة:</label>
+            <input type="text" id="doctorName" placeholder="اسم الطبيب">
+        </div>
+        <div class="input-group">
+            <label id="lblConsultant">اسم الاستشاري المسؤول:</label>
+            <input type="text" id="consultantName" placeholder="اسم الاستشاري">
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="canvas-card">
+            <canvas id="partogramCanvas" width="700" height="480"></canvas>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--accent-cyan);"></div>
+                    <span id="lgDilation">اتساع العنق (Cervical Dilation - X)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--accent-blue);"></div>
+                    <span>نزول الجنين (Station - O)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--alert-red);"></div>
+                    <span id="lgAlert">خط الإنذار / العمل</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls-panel">
+            <div class="section-title" id="secDataEntry">تسجيل القياسات</div>
+            
+            <div class="input-group">
+                <label id="lblTime">الزمن (بالساعات):</label>
+                <input type="number" id="timeInput" min="0" max="24" value="0">
+            </div>
+
+            <div class="input-group">
+                <label id="lblDilation">اتساع عنق الرحم (سم):</label>
+                <input type="number" id="dilationInput" min="0" max="10" value="4">
+            </div>
+
+            <div class="input-group">
+                <label id="lblStation">مستوى نزول الرأس (Station):</label>
+                <select id="stationInput">
+                    <option value="-3">-3</option>
+                    <option value="-2">-2</option>
+                    <option value="-1">-1</option>
+                    <option value="0" selected>0</option>
+                    <option value="1">+1</option>
+                    <option value="2">+2</option>
+                    <option value="3">+3</option>
+                </select>
+            </div>
+
+            <div class="btn-group">
+                <button class="action-btn btn-add" id="btnAdd" onclick="addDataPoint()">إضافة نقطة</button>
+                <button class="action-btn btn-reset" id="btnReset" onclick="resetData()">إعادة ضبط</button>
+            </div>
+
+            <div class="section-title" id="secOutcome" style="margin-top: 10px;">النتيجة النهائية والملاحظات</div>
+            
+            <div class="input-group">
+                <label id="lblOutcome">النتيجة النهائية (Outcome):</label>
+                <select id="finalOutcome">
+                    <option value="SVD" id="optSVD">ولادة طبيعية تلقائية (SVD)</option>
+                    <option value="Instrumental" id="optInst">ولادة بآلات (Vacuum/Forceps)</option>
+                    <option value="CS" id="optCS">قيصرية (C-Section)</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label id="lblNotes">الملاحظات التمريضية والإكلينيكية:</label>
+                <textarea id="clinicalNotes" placeholder="أدخل أي ملاحظات إضافية هنا..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- Illustrations Section -->
+    <div class="illustrations-card">
+        <div class="section-title" id="secIllustrations">رسومات توضيحية إكلينيكية (Clinical Diagrams)</div>
+        <div class="illustrations-grid">
+            
+            <!-- Diagram 1: Cervical Dilation -->
+            <div class="illustration-box">
+                <strong id="diag1Title">اتساع عنق الرحم (Cervical Dilation)</strong>
+                <svg viewBox="0 0 200 120">
+                    <circle cx="100" cy="60" r="45" stroke="#94a3b8" stroke-width="3" fill="none"/>
+                    <circle cx="100" cy="60" r="25" stroke="#00f2fe" stroke-width="4" fill="rgba(0, 242, 254, 0.1)" stroke-dasharray="4"/>
+                    <text x="100" y="65" text-anchor="middle" fill="#00f2fe" font-size="12">10 cm Full Dilation</text>
+                </svg>
+            </div>
+
+            <!-- Diagram 2: Fetal Station -->
+            <div class="illustration-box">
+                <strong id="diag2Title">مستويات نزول الرأس (Fetal Station)</strong>
+                <svg viewBox="0 0 200 120">
+                    <line x1="30" y1="20" x2="170" y2="20" stroke="#94a3b8" stroke-width="1" />
+                    <text x="175" y="24" fill="#94a3b8" font-size="10">-3</text>
+                    
+                    <line x1="30" y1="60" x2="170" y2="60" stroke="#4facfe" stroke-width="2" stroke-dasharray="3" />
+                    <text x="175" y="64" fill="#4facfe" font-size="10" font-weight="bold">0 (Ischial Spines)</text>
+                    
+                    <line x1="30" y1="100" x2="170" y2="100" stroke="#94a3b8" stroke-width="1" />
+                    <text x="175" y="104" fill="#94a3b8" font-size="10">+3</text>
+
+                    <circle cx="100" cy="50" r="18" fill="rgba(79, 172, 254, 0.3)" stroke="#4facfe" stroke-width="2"/>
+                </svg>
+            </div>
+
+        </div>
+    </div>
+
+    <footer>
+        Copyright &copy; Dr Yasser elshehawy 2026 - All Rights Reserved | RAIDS System
+    </footer>
+
+    <script>
+        const canvas = document.getElementById('partogramCanvas');
+        const ctx = canvas.getContext('2d');
+        let dataPoints = [];
+        let currentLang = 'ar';
+
+        const translations = {
+            ar: {
+                title: "Robson and AI Dynamic Partogram (RAIDS)",
+                sub: "نظام متابعة الولادة التفاعلي والسجل الطبي",
+                hospital: "اسم المستشفى:",
+                name: "اسم المريضة:",
+                age: "العمر:",
+                mrn: "رقم الملف الطبي (MRN):",
+                date: "التاريخ:",
+                doctor: "اسم الطبيب القائم بالولادة:",
+                consultant: "اسم الاستشاري المسؤول:",
+                dataEntry: "تسجيل القياسات",
+                time: "الزمن (بالساعات):",
+                dilation: "اتساع عنق الرحم (سم):",
+                station: "مستوى نزول الرأس (Station):",
+                addBtn: "إضافة نقطة",
+                resetBtn: "إعادة ضبط",
+                outcomeSec: "النتيجة النهائية والملاحظات",
+                outcome: "النتيجة النهائية (Outcome):",
+                notes: "الملاحظات التمريضية والإكلينيكية:",
+                svd: "ولادة طبيعية تلقائية (SVD)",
+                inst: "ولادة بآلات (Vacuum/Forceps)",
+                cs: "قيصرية (C-Section)",
+                illustrations: "رسومات توضيحية إكلينيكية (Clinical Diagrams)",
+                diag1: "اتساع عنق الرحم (Cervical Dilation)",
+                diag2: "مستويات نزول الرأس (Fetal Station)",
+                lgDil: "اتساع العنق (Cervical Dilation - X)",
+                lgAlert: "خط الإنذار / العمل"
+            },
+            en: {
+                title: "Robson and AI Dynamic Partogram (RAIDS)",
+                sub: "Interactive Labor Monitoring & Medical Record",
+                hospital: "Hospital Name:",
+                name: "Patient Name:",
+                age: "Age:",
+                mrn: "Medical Record No (MRN):",
+                date: "Date:",
+                doctor: "Attending Doctor:",
+                consultant: "Consultant in Charge:",
+                dataEntry: "Data Entry",
+                time: "Time (Hours):",
+                dilation: "Cervical Dilation (cm):",
+                station: "Fetal Station:",
+                addBtn: "Add Point",
+                resetBtn: "Reset",
+                outcomeSec: "Final Outcome & Notes",
+                outcome: "Final Outcome:",
+                notes: "Clinical & Nursing Notes:",
+                svd: "Spontaneous Vaginal Delivery (SVD)",
+                inst: "Instrumental Delivery",
+                cs: "Cesarean Section (C-Section)",
+                illustrations: "Clinical Diagrams",
+                diag1: "Cervical Dilation",
+                diag2: "Fetal Station Levels",
+                lgDil: "Cervical Dilation (X)",
+                lgAlert: "Alert / Action Line"
+            }
+        };
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+            document.documentElement.lang = currentLang;
+
+            const t = translations[currentLang];
+            document.getElementById('langBtn').textContent = currentLang === 'ar' ? 'English' : 'عربي';
+            document.getElementById('appTitle').textContent = t.title;
+            document.getElementById('appSub').textContent = t.sub;
+            document.getElementById('lblHospital').textContent = t.hospital;
+            document.getElementById('lblName').textContent = t.name;
+            document.getElementById('lblAge').textContent = t.age;
+            document.getElementById('lblMRN').textContent = t.mrn;
+            document.getElementById('lblDate').textContent = t.date;
+            document.getElementById('lblDoctor').textContent = t.doctor;
+            document.getElementById('lblConsultant').textContent = t.consultant;
+            document.getElementById('secDataEntry').textContent = t.dataEntry;
+            document.getElementById('lblTime').textContent = t.time;
+            document.getElementById('lblDilation').textContent = t.dilation;
+            document.getElementById('lblStation').textContent = t.station;
+            document.getElementById('btnAdd').textContent = t.addBtn;
+            document.getElementById('btnReset').textContent = t.resetBtn;
+            document.getElementById('secOutcome').textContent = t.outcomeSec;
+            document.getElementById('lblOutcome').textContent = t.outcome;
+            document.getElementById('lblNotes').textContent = t.notes;
+            document.getElementById('optSVD').textContent = t.svd;
+            document.getElementById('optInst').textContent = t.inst;
+            document.getElementById('optCS').textContent = t.cs;
+            document.getElementById('secIllustrations').textContent = t.illustrations;
+            document.getElementById('diag1Title').textContent = t.diag1;
+            document.getElementById('diag2Title').textContent = t.diag2;
+            document.getElementById('lgDilation').textContent = t.lgDil;
+            document.getElementById('lgAlert').textContent = t.lgAlert;
+
+            drawGrid();
+        }
+
+        function drawGrid() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const padding = 50;
+            const width = canvas.width - 2 * padding;
+            const height = canvas.height - 2 * padding;
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+            ctx.lineWidth = 1;
+
+            // Hours (0 - 14)
+            for (let i = 0; i <= 14; i++) {
+                const x = padding + (i * (width / 14));
+                ctx.beginPath();
+                ctx.moveTo(x, padding);
+                ctx.lineTo(x, canvas.height - padding);
+                ctx.stroke();
+
+                ctx.fillStyle = '#94a3b8';
+                ctx.font = '10px Segoe UI';
+                ctx.fillText(i + 'h', x - 6, canvas.height - padding + 20);
+            }
+
+            // Dilation (0 - 10 cm)
+            for (let i = 0; i <= 10; i++) {
+                const y = canvas.height - padding - (i * (height / 10));
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(canvas.width - padding, y);
+                ctx.stroke();
+
+                ctx.fillStyle = '#94a3b8';
+                ctx.font = '10px Segoe UI';
+                ctx.fillText(i + ' cm', padding - 35, y + 4);
+            }
+
+            // Alert Line
+            ctx.strokeStyle = '#ff4b5c';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            const xAlertStart = padding + (0 * (width / 14));
+            const yAlertStart = canvas.height - padding - (4 * (height / 10));
+            const xAlertEnd = padding + (6 * (width / 14));
+            const yAlertEnd = canvas.height - padding - (10 * (height / 10));
+            ctx.moveTo(xAlertStart, yAlertStart);
+            ctx.lineTo(xAlertEnd, yAlertEnd);
+            ctx.stroke();
+
+            // Action Line
+            ctx.strokeStyle = '#f1c40f';
+            ctx.beginPath();
+            const xActionStart = padding + (4 * (width / 14));
+            const xActionEnd = padding + (10 * (width / 14));
+            ctx.moveTo(xActionStart, yAlertStart);
+            ctx.lineTo(xActionEnd, yAlertEnd);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Points Drawing
+            if (dataPoints.length > 0) {
+                // Dilation Line (Cyan)
+                ctx.strokeStyle = '#00f2fe';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                dataPoints.forEach((pt, index) => {
+                    const x = padding + (pt.time * (width / 14));
+                    const y = canvas.height - padding - (pt.dilation * (height / 10));
+                    if (index === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
+                ctx.stroke();
+
+                // Dilation Points (X)
+                dataPoints.forEach(pt => {
+                    const x = padding + (pt.time * (width / 14));
+                    const y = canvas.height - padding - (pt.dilation * (height / 10));
+                    ctx.fillStyle = '#00f2fe';
+                    ctx.font = 'bold 14px Segoe UI';
+                    ctx.fillText('X', x - 5, y + 5);
+                });
+
+                // Station Line (Blue Circle)
+                ctx.strokeStyle = '#4facfe';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                dataPoints.forEach((pt, index) => {
+                    const mappedStation = pt.station + 3; // Mapping -3..+3 to 0..6 grid units
+                    const x = padding + (pt.time * (width / 14));
+                    const y = canvas.height - padding - (mappedStation * (height / 10));
+                    if (index === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
+                ctx.stroke();
+
+                dataPoints.forEach(pt => {
+                    const mappedStation = pt.station + 3;
+                    const x = padding + (pt.time * (width / 14));
+                    const y = canvas.height - padding - (mappedStation * (height / 10));
+                    ctx.fillStyle = '#4facfe';
+                    ctx.beginPath();
+                    ctx.arc(x, y, 5, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+            }
+        }
+
+        function addDataPoint() {
+            const time = parseFloat(document.getElementById('timeInput').value);
+            const dilation = parseFloat(document.getElementById('dilationInput').value);
+            const station = parseInt(document.getElementById('stationInput').value);
+
+            if (isNaN(time) || isNaN(dilation)) return;
+
+            dataPoints.push({ time, dilation, station });
+            dataPoints.sort((a, b) => a.time - b.time);
+
+            drawGrid();
+        }
+
+        function resetData() {
+            dataPoints = [];
+            document.getElementById('timeInput').value = 0;
+            document.getElementById('dilationInput').value = 4;
+            drawGrid();
+        }
+
+        // Set default date to today
+        document.getElementById('examDate').valueAsDate = new Date();
+
+        drawGrid();
+    </script>
+</body>
+</html>
